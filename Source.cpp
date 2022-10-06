@@ -56,6 +56,15 @@ int main() {
 	cout << endl;
 	double prev_str[n_l_int + 1] {0};
 	double current_str[n_l_int + 1] {0};
+	cout << std::setw(10) << "       |";
+	for (int i = 0; i < n_l_int; i++) {
+		cout << std::setw(12) << arr_l[i];
+	}
+	cout << endl;
+	for (int i = 0; i < n_l_int; i++) {
+		cout << "_______________";
+	}
+	cout << endl;
 
 	for (int i = 0; i < n_tau + 1; i++) {
 		double t = arr_tau[i];
@@ -63,33 +72,34 @@ int main() {
 
 		for (int j = 0; j < n_l_int + 1; j++) {
 			double x = arr_l[j];
-			double fi_x;
+			double u_x_t;
 			//cout << std::setw(8) << x;
 			if (t == 0) {
 				if (x == 0 || x == l){
-					fi_x = 0;
+					u_x_t = 0;
 				}
 				else {
-					fi_x = fi(x);
-					fi_x = (round(fi_x * 1000) / 1000);
-					if (fi_x == 0.0 || fi_x == -0.0) {
-						fi_x = 0;
+					u_x_t = fi(x);
+					u_x_t = (round(u_x_t * 1000) / 1000);
+					if (u_x_t == 0.0 || u_x_t == -0.0) {
+						u_x_t = 0;
 					}
 				}
-				prev_str[j] = fi_x;
+				prev_str[j] = u_x_t;
 			}
 			else {
 				if (x == 0 || x == l) {
-					fi_x = 0;
-					current_str[j] = fi_x;
+					u_x_t = 0;
+					current_str[j] = u_x_t;
 				}
 				else {
-					fi_x = tau * ((prev_str[j - 1] - 2*prev_str[j] + prev_str[j + 1]) / pow(h, 2)) + prev_str[j];
-					current_str[j] = fi_x;
+					u_x_t = tau * ((prev_str[j - 1] - 2 * prev_str[j] + prev_str[j + 1]) / pow(h, 2)) + prev_str[j];
+					current_str[j] = u_x_t;
 				}
 			}
-			cout << std::setw(12) << fi_x;
+			cout << std::setw(12) << u_x_t;
 		}
+
 		if (i != 0) {
 			for (int k = 0; k < n_l_int; k++) {
 				prev_str[k] = current_str[k];
@@ -102,7 +112,7 @@ int main() {
 	delete[] arr_tau;
 	delete[] arr_l;
 
-	cout << pi << endl;
+	//cout << pi << endl;
 	system("pause");
 	return 0;
 }
