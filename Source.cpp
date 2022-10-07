@@ -28,7 +28,7 @@ double fi(const double& x) {
 int main() {
 	//cout << std::fixed << std::setprecision(6); // «адаем точность дл€ double в кауте, думаю будет достаточно
 	
-	constexpr double l = 1.0;
+	constexpr double l = 3.0;
 	constexpr double h = 0.125;
 	constexpr double n_l = l / h;
 	constexpr int n_l_int = l / h;
@@ -56,15 +56,16 @@ int main() {
 	cout << endl;
 	double prev_str[n_l_int + 1] {0};
 	double current_str[n_l_int + 1] {0};
-	cout << std::setw(10) << "       |";
+	cout << std::setw(10) << "        |";
 	for (int i = 0; i < n_l_int; i++) {
-		cout << std::setw(12) << arr_l[i];
+		cout << std::setw(8) << arr_l[i];
 	}
 	cout << endl;
 	for (int i = 0; i < n_l_int; i++) {
-		cout << "_______________";
+		cout << "_________";
 	}
 	cout << endl;
+	cout << '\n';
 
 	for (int i = 0; i < n_tau + 1; i++) {
 		double t = arr_tau[i];
@@ -97,7 +98,8 @@ int main() {
 					current_str[j] = u_x_t;
 				}
 			}
-			cout << std::setw(12) << u_x_t;
+			u_x_t = (round(u_x_t * 1000) / 1000);
+			cout << std::setw(8) << u_x_t;
 		}
 
 		if (i != 0) {
