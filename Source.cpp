@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <math.h>
 #include <cmath>
 #include <numbers>
@@ -6,6 +6,10 @@
 #include <memory>
 
 //#define _USE_MATH_DEFINES
+
+// на вход задается некоторая строка, необходимо вывести из него колво цифр и колво букв
+
+
 
 using std::cout;
 using std::cin;
@@ -26,7 +30,7 @@ double fi(const double& x) {
 //}
 
 int main() {
-	//cout << std::fixed << std::setprecision(6); // ������ �������� ��� double � �����, ����� ����� ����������
+	//cout << std::fixed << std::setprecision(6); // Задаем точность для double в кауте, думаю будет достаточно
 	
 	constexpr double l = 3.0;
 	constexpr double h = 0.125;
