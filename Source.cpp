@@ -17,12 +17,37 @@
 using std::cout;
 using std::cin;
 using std::endl;
+
 constexpr double pi = std::numbers::pi;
-void tau_list(double* &arr, const int &size_arr, const double &step) {
-	for (int i = 0; i <= size_arr; i++) {
-		arr[i] = step * i;
+constexpr double l = 1.5;
+constexpr double h = 0.125;
+constexpr double n_l = l / h;
+constexpr int n_l_int = l / h;
+
+constexpr double tau = 0.0001;
+constexpr int n_tau = 30;
+
+
+//void tau_list(double*& arr, const int& size_arr, const double& step) {
+//	for (int i = 0; i <= size_arr; i++) {
+//		arr[i] = step * i;
+//	}
+//}
+
+template<unsigned N>
+constexpr double* tau_list(const double& step)
+{
+	double* res = new double[N];
+	for (int i = 0; i <= N; i++) {
+		res[i] = step * i;
 	}
+	return res;
 }
+//struct arrs
+
+const double* arr_tau = tau_list<n_tau>(tau);
+const double* arr_l = tau_list<n_l_int>(h);
+
 
 double fi(const double& x) {
 	return 4 * (sin(2 * pi * x) * pow(cos(pi * x), 2));
@@ -36,19 +61,14 @@ double fi(const double& x) {
 //
 //}
 
+
 int main() {
 	//cout << std::fixed << std::setprecision(6); // Задаем точность для double в кауте, думаю будет достаточно
 	
-	constexpr double l = 1.5;
-	constexpr double h = 0.125;
-	constexpr double n_l = l / h;
-	constexpr int n_l_int = l / h;
 	if (n_l != n_l_int) {
 		cout << "invalid";
 		return 404;
 	}
-	constexpr double tau = 0.0001;
-	constexpr int n_tau = 30;
 	
 	int val_on_core = n_l_int / 4;
 	
@@ -62,11 +82,10 @@ int main() {
 	}
 
 
-	double* arr_tau = new double[n_tau + 1];
-	tau_list(arr_tau, n_tau, tau);
+	/*tau_list(arr_tau, n_tau, tau);
 
-	double* arr_l = new double[n_l_int + 1];
-	tau_list(arr_l, n_l_int, h);
+	
+	tau_list(arr_l, n_l_int, h);*/
 
 	double prev_str[n_l_int + 1] {0};
 	double current_str[n_l_int + 1] {0};
@@ -101,7 +120,6 @@ int main() {
 		int thread_test = 0;
 
 		std::thread t1([&]() {
-			thread_test++;
 			for (int j = 0; j < mlt_for_loop[1]; j++) {
 				double x = arr_l[j];
 				double u_x_t;
@@ -117,9 +135,9 @@ int main() {
 							u_x_t = 0;
 						}
 					}
-					m.lock();
+					//m.lock();
 					prev_str[j] = u_x_t;
-					m.unlock();
+					//m.unlock();
 				}
 				else {
 					if (x == 0 || x == l) {
@@ -141,7 +159,6 @@ int main() {
 			});
 
 		std::thread t2([&]() {
-			thread_test++;
 			for (int j = mlt_for_loop[1]; j < mlt_for_loop[2]; j++) {
 				double x = arr_l[j];
 				double u_x_t;
@@ -157,9 +174,9 @@ int main() {
 							u_x_t = 0;
 						}
 					}
-					m.lock();
+					//m.lock();
 					prev_str[j] = u_x_t;
-					m.unlock();
+					//m.unlock();
 				}
 				else {
 					if (x == 0 || x == l) {
@@ -181,7 +198,6 @@ int main() {
 			});
 
 		std::thread t3([&]() {
-			thread_test++;
 			for (int j = mlt_for_loop[2]; j < mlt_for_loop[3]; j++) {
 				double x = arr_l[j];
 				double u_x_t;
@@ -197,9 +213,9 @@ int main() {
 							u_x_t = 0;
 						}
 					}
-					m.lock();
+					//m.lock();
 					prev_str[j] = u_x_t;
-					m.unlock();
+					//m.unlock();
 				}
 				else {
 					if (x == 0 || x == l) {
@@ -221,7 +237,6 @@ int main() {
 			});
 
 		std::thread t4([&]() {
-			thread_test++;
 			for (int j = mlt_for_loop[3]; j < n_l_int + 1; j++) {
 				double x = arr_l[j];
 				double u_x_t;
@@ -237,9 +252,9 @@ int main() {
 							u_x_t = 0;
 						}
 					}
-					m.lock();
+					//m.lock();
 					prev_str[j] = u_x_t;
-					m.unlock();
+					//m.unlock();
 				}
 				else {
 					if (x == 0 || x == l) {
