@@ -26,10 +26,10 @@ constexpr int n_l_int = l / h;
 constexpr double tau = 0.0001;
 constexpr int n_tau = 30;
 
-constexpr int val_on_core = n_l_int / 4;
-
-
 constexpr uint32_t num_of_threads = 4;
+constexpr int val_on_core = n_l_int / num_of_threads;
+
+
 
 //void tau_list(double*& arr, const int& size_arr, const double& step) {
 //	for (int i = 0; i <= size_arr; i++) {
