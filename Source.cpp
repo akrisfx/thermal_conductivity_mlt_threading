@@ -1,13 +1,12 @@
 ﻿#include <iostream>
 #include <math.h>
-#include <cmath>
 #include <numbers>
 #include <iomanip>
 #include <memory>
 #include <thread>
 #include <atomic>
 #include <mutex>
-
+#include <vector>
 //#define _USE_MATH_DEFINES
 
 // на вход задается некоторая строка, необходимо вывести из него колво цифр и колво букв
@@ -29,6 +28,8 @@ constexpr int n_tau = 30;
 
 constexpr int val_on_core = n_l_int / 4;
 
+
+constexpr uint32_t num_of_threads = 4;
 
 //void tau_list(double*& arr, const int& size_arr, const double& step) {
 //	for (int i = 0; i <= size_arr; i++) {
@@ -145,28 +146,49 @@ int main() {
 	for (int i = 0; i <= n_tau; i++) {
 		double t = a.arr_tau[i];
 		cout << std::setw(6) << t <<  "   |";
-		int thread_test = 0;
+		//std::vector<std::thread> thread_arr;
+		std::thread* thread_arr = new std::thread[num_of_threads]; // ---1---
+		for (int thrd = 0; thrd < num_of_threads; ++thrd) {
+			if (thrd == num_of_threads - 1) {
+				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], n_l_int, a, t);  // ---1---
+				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], n_l_int, a, t);
+				//thread_arr.push_back(thrd_to_push);
+			}
+			else {
+				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], a, t); // ---1---
+				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], a, t);
+				//thread_arr.push_back(thrd_to_push);
+			}
+		}
 
-		std::thread t1([&]() {
-			in_Thread(mlt_for_loop[0], mlt_for_loop[1], a, t);
-			});
+		for (int thrd = 0; thrd < num_of_threads; ++thrd) {
+			thread_arr[thrd].join();
+		}
 
-		std::thread t2([&]() {
-			in_Thread(mlt_for_loop[1], mlt_for_loop[2], a, t);
-		});
+		// dynamic threads, but this not works
+		// -------------------------------------Diffrent realizacia-------------------------
+		// hardcoded 4 threads
 
-		std::thread t3([&]() {
-			in_Thread(mlt_for_loop[2], mlt_for_loop[3], a, t);
-		});
+		//std::thread t1([&]() {
+		//	in_Thread(mlt_for_loop[0], mlt_for_loop[1], a, t);
+		//	});
 
-		std::thread t4([&]() {
-			in_Thread(mlt_for_loop[3], n_l_int, a, t);
-		});
+		//std::thread t2([&]() {
+		//	in_Thread(mlt_for_loop[1], mlt_for_loop[2], a, t);
+		//});
 
-		t1.join();
-		t2.join();
-		t3.join();
-		t4.join();
+		//std::thread t3([&]() {
+		//	in_Thread(mlt_for_loop[2], mlt_for_loop[3], a, t);
+		//});
+
+		//std::thread t4([&]() {
+		//	in_Thread(mlt_for_loop[3], n_l_int, a, t);
+		//});
+
+		//t1.join();
+		//t2.join();
+		//t3.join();
+		//t4.join();
 
 		for (int j = 0; j < n_l_int + 1; j++) {
 			double u_x_t = (round(a.current_str[j] * 1000) / 1000);
@@ -181,10 +203,9 @@ int main() {
 		
 		//prev_str = current_str;
 		cout << endl;
-		//cout << thread_test << endl;
 	}
-	/*delete[] arr_tau;
-	delete[] arr_l;*/
+	delete[] a.arr_tau;
+	delete[] a.arr_l;
 
 	//cout << pi << endl;
 	system("pause");
