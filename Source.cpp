@@ -60,7 +60,8 @@ double fi(const double& x) {
 	return 4 * (sin(2 * pi * x) * pow(cos(pi * x), 2));
 }
 
-void in_Thread(int start, int end, arrs& a, double& t) {
+void in_Thread(int start, int end, arrs* b, double t) {
+	arrs &a = *b;
 		for (int j = start; j < end; j++) {
 			double x = a.arr_l[j];
 			double u_x_t;
@@ -99,6 +100,8 @@ void in_Thread(int start, int end, arrs& a, double& t) {
 		}
 }
 
+
+
 //void copy_arr(double[] &qwdn, double[n_l_int] &copy) {
 //
 //}
@@ -117,8 +120,8 @@ int main() {
 	
 	std::mutex m;
 
-	int mlt_for_loop[6];
-	for (int i = 0; i < 4; i++) {
+	int mlt_for_loop[num_of_threads];
+	for (int i = 0; i < num_of_threads; i++) {
 		mlt_for_loop[i] = val_on_core * i;
 		cout << mlt_for_loop[i] << ' ';
 	}
@@ -146,18 +149,25 @@ int main() {
 	for (int i = 0; i <= n_tau; i++) {
 		double t = a.arr_tau[i];
 		cout << std::setw(6) << t <<  "   |";
-		//std::vector<std::thread> thread_arr;
+		//std::vector<std::thread> thread_arr; // ---vec---
 		std::thread* thread_arr = new std::thread[num_of_threads]; // ---1---
+
 		for (int thrd = 0; thrd < num_of_threads; ++thrd) {
 			if (thrd == num_of_threads - 1) {
-				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], n_l_int, a, t);  // ---1---
-				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], n_l_int, a, t);
-				//thread_arr.push_back(thrd_to_push);
+				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], n_l_int, &a, t);  // ---1---
+				/*thread_arr[thrd] = std::thread([&]() {
+					in_Thread(mlt_for_loop[thrd], n_l_int, std::ref(a), std::ref(t));
+				});*/// ---2---
+				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], n_l_int, a, t); // ---vec---
+				//thread_arr.push_back(thrd_to_push); // ---vec---
 			}
 			else {
-				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], a, t); // ---1---
-				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], a, t);
-				//thread_arr.push_back(thrd_to_push);
+				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], &a, t); // ---1---
+				/*thread_arr[thrd] = std::thread([&]() { 
+					in_Thread(mlt_for_loop[thrd], mlt_for_loop[thrd + 1], std::ref(a), std::ref(t));
+					});*/ // ---2---
+				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], a, t); // ---vec---
+				//thread_arr.push_back(thrd_to_push); // ---vec---
 			}
 		}
 
