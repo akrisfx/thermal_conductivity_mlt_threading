@@ -6,6 +6,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <chrono>
 #include <vector>
 //#define _USE_MATH_DEFINES
 
@@ -18,7 +19,7 @@ using std::cin;
 using std::endl;
 
 constexpr double pi = std::numbers::pi;
-constexpr double l = 1.0;
+constexpr double l = 1000.0;
 constexpr double h = 0.125;
 constexpr double n_l = l / h;
 constexpr int n_l_int = l / h;
@@ -26,7 +27,7 @@ constexpr int n_l_int = l / h;
 constexpr double tau = 0.0001;
 constexpr int n_tau = 30;
 
-constexpr uint32_t num_of_threads = 4;
+constexpr uint32_t num_of_threads = 2;
 constexpr int val_on_core = n_l_int / num_of_threads;
 
 
@@ -38,7 +39,7 @@ constexpr int val_on_core = n_l_int / num_of_threads;
 //}
 
 template<unsigned N>
-constexpr double* tau_list(const double& step)
+/*constexpr*/double* tau_list(const double& step)
 {
 	double* res = new double[N];
 	for (int i = 0; i <= N; i++) {
@@ -49,8 +50,8 @@ constexpr double* tau_list(const double& step)
 struct arrs {
 	double prev_str[n_l_int + 1]{ 0 };
 	double current_str[n_l_int + 1]{ 0 };
-	const double* arr_tau = tau_list<n_tau>(tau);
-	const double* arr_l = tau_list<n_l_int>(h);
+	/*const*/ double* arr_tau = tau_list<n_tau>(tau);
+	/*const*/ double* arr_l = tau_list<n_l_int>(h);
 };
 
 
@@ -133,19 +134,19 @@ int main() {
 	cout << endl << std::setw(10) << "        |";
 
 	for (int i = 0; i <= n_l_int; i++) {
-		cout << std::setw(8) << a.arr_l[i];
+		//cout << std::setw(8) << a.arr_l[i];
 	}
 	cout << endl;
 
 	for (int i = 0; i <= n_l_int; i++) {
-		cout << "_________";
+		//cout << "_________";
 	}
 
 	cout << endl;
 	cout << '\n';
 	
 
-
+	auto t1 = std::chrono::steady_clock::now();
 	for (int i = 0; i <= n_tau; i++) {
 		double t = a.arr_tau[i];
 		cout << std::setw(6) << t <<  "   |";
@@ -202,7 +203,7 @@ int main() {
 
 		for (int j = 0; j < n_l_int + 1; j++) {
 			double u_x_t = (round(a.current_str[j] * 1000) / 1000);
-			cout << std::setw(8) << u_x_t;
+			//cout << std::setw(8) << u_x_t;
 		}
 
 		if (i != 0) {
@@ -214,8 +215,11 @@ int main() {
 		//prev_str = current_str;
 		cout << endl;
 	}
-	delete[] a.arr_tau;
-	delete[] a.arr_l;
+	//delete[]& a.arr_tau;
+	//delete[]& a.arr_l;
+	auto t2 = std::chrono::steady_clock::now();
+
+	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000000.0 << "[ms]" << std::endl;
 
 	//cout << pi << endl;
 	system("pause");
