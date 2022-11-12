@@ -27,7 +27,7 @@ constexpr int n_l_int = l / h;
 constexpr double tau = 0.0001;
 constexpr int n_tau = 30;
 
-constexpr uint32_t num_of_threads = 2;
+constexpr uint32_t num_of_threads = 1;
 constexpr int val_on_core = n_l_int / num_of_threads;
 
 
@@ -145,20 +145,20 @@ int main() {
 	cout << endl;
 	cout << '\n';
 	
-
 	auto t1 = std::chrono::steady_clock::now();
+	std::thread* thread_arr = new std::thread[num_of_threads]; // ---1---
 	for (int i = 0; i <= n_tau; i++) {
 		double t = a.arr_tau[i];
 		cout << std::setw(6) << t <<  "   |";
 		//std::vector<std::thread> thread_arr; // ---vec---
-		std::thread* thread_arr = new std::thread[num_of_threads]; // ---1---
+		
 
 		for (int thrd = 0; thrd < num_of_threads; ++thrd) {
 			if (thrd == num_of_threads - 1) {
 				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], n_l_int, &a, t);  // ---1---
 				/*thread_arr[thrd] = std::thread([&]() {
 					in_Thread(mlt_for_loop[thrd], n_l_int, std::ref(a), std::ref(t));
-				});*/// ---2---
+				}); */																	   //	---2---
 				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], n_l_int, a, t); // ---vec---
 				//thread_arr.push_back(thrd_to_push); // ---vec---
 			}
@@ -166,7 +166,7 @@ int main() {
 				thread_arr[thrd] = std::thread(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], &a, t); // ---1---
 				/*thread_arr[thrd] = std::thread([&]() { 
 					in_Thread(mlt_for_loop[thrd], mlt_for_loop[thrd + 1], std::ref(a), std::ref(t));
-					});*/ // ---2---
+					}); */																				  // ---2---
 				//std::thread thrd_to_push(in_Thread, mlt_for_loop[thrd], mlt_for_loop[thrd + 1], a, t); // ---vec---
 				//thread_arr.push_back(thrd_to_push); // ---vec---
 			}
@@ -215,11 +215,12 @@ int main() {
 		//prev_str = current_str;
 		cout << endl;
 	}
+	delete[] thread_arr;
 	//delete[]& a.arr_tau;
 	//delete[]& a.arr_l;
 	auto t2 = std::chrono::steady_clock::now();
 
-	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000000.0 << "[ms]" << std::endl;
+	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds> (t2 - t1).count()/* / 1000000.0 */<< "[ms]" << std::endl;
 
 	//cout << pi << endl;
 	system("pause");
