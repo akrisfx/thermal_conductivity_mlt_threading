@@ -227,7 +227,7 @@ int main() {
 			is_thread_finished[thrd] = false;
 		}
 
-		// dynamic threads, but works slower than without threads
+		// dynamic threads
 		// -------------------------------------Diffrent realizacia-------------------------
 		// hardcoded 4 threads
 
@@ -271,7 +271,7 @@ int main() {
 	delete[] thread_arr;
 	//delete[]& a.arr_tau;
 	//delete[]& a.arr_l;
-	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000<< "[ns]" << std::endl;
+	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000<< "[ns] / 1000" << std::endl;
 
 	cout << std::setw(6) << t << "   |";
 	for (int j = 0; j < n_l_int + 1; j++) {
