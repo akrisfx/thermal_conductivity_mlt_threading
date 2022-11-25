@@ -29,9 +29,9 @@ constexpr double tau = 0.0001;
 constexpr int n_tau = 300;
 double t = 0;
 
-constexpr uint32_t thread_count = 3;
+constexpr uint32_t thread_count = 4;
 constexpr int val_on_core = n_l_int / thread_count;
-/*std::atomic_*/bool is_thread_finished[thread_count] = { false };
+std::atomic_bool is_thread_finished[thread_count] = { false };
 std::atomic_bool is_thread_stoped[thread_count];
 bool thread_end = false;
 std::atomic_bool thread_stop = false;
@@ -54,8 +54,8 @@ template<unsigned N>
 	return res;
 }
 struct arrs {
-	double prev_str[n_l_int + 1]{ 0 };
-	double current_str[n_l_int + 1]{ 0 };
+	double* prev_str = new double[n_l_int + 1]{ 0 };
+	double* current_str = new double[n_l_int + 1]{ 0 };
 	/*const*/ double* arr_tau = tau_list<n_tau>(tau);
 	/*const*/ double* arr_l = tau_list<n_l_int>(h);
 };
@@ -111,6 +111,7 @@ void in_Thread(int start, int end, arrs* b, /*double t,*/ int thread_number) {
 					//m.lock();
 					u_x_t = tau * ((a.prev_str[j - 1] - 2 * a.prev_str[j] + a.prev_str[j + 1]) / pow(h, 2)) + a.prev_str[j];
 					a.current_str[j] = u_x_t;
+					//std::cout << u_x_t << ' ';
 					//m.unlock();
 				}
 			}
@@ -143,6 +144,7 @@ int main() {
 		return 404;
 	}
 	
+	std::cout << "Thread count: " << thread_count << std::endl;
 	 
 	//cout << val_on_core << endl;
 	
@@ -231,27 +233,27 @@ int main() {
 		// -------------------------------------Diffrent realizacia-------------------------
 		// hardcoded 4 threads
 
-		//std::thread t1([&]() {
-		//	in_Thread(mlt_for_loop[0], mlt_for_loop[1], a, t);
-		//	});
+		/*std::thread t1([&]() {
+			in_Thread(mlt_for_loop[0], mlt_for_loop[1], a, t);
+			});
 
-		//std::thread t2([&]() {
-		//	in_Thread(mlt_for_loop[1], mlt_for_loop[2], a, t);
-		//});
+		std::thread t2([&]() {
+			in_Thread(mlt_for_loop[1], mlt_for_loop[2], a, t);
+		});
 
-		//std::thread t3([&]() {
-		//	in_Thread(mlt_for_loop[2], mlt_for_loop[3], a, t);
-		//});
+		std::thread t3([&]() {
+			in_Thread(mlt_for_loop[2], mlt_for_loop[3], a, t);
+		});
 
-		//std::thread t4([&]() {
-		//	in_Thread(mlt_for_loop[3], n_l_int, a, t);
-		//});
+		std::thread t4([&]() {
+			in_Thread(mlt_for_loop[3], n_l_int, a, t);
+		});
 
-		//t1.join();
-		//t2.join();
-		//t3.join();
-		//t4.join();
-		/*cout << std::setw(6) << t << "   |";
+		t1.join();
+		t2.join();
+		t3.join();
+		t4.join();
+		cout << std::setw(6) << t << "   |";
 		for (int j = 0; j < n_l_int + 1; j++) {
 			double u_x_t = (round(a.current_str[j] * 1000) / 1000);
 			cout << std::setw(8) << u_x_t;
@@ -271,12 +273,13 @@ int main() {
 	delete[] thread_arr;
 	//delete[]& a.arr_tau;
 	//delete[]& a.arr_l;
-	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000<< "[ns] / 1000" << std::endl;
+	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000<< "[ms] " << std::endl;
 
 	cout << std::setw(6) << t << "   |";
-	for (int j = 0; j < n_l_int + 1; j++) {
-		double u_x_t = (round(a.current_str[j] * 1000) / 1000);
+	for (int j = 0; j < 20 ; j++) {
+		//double u_x_t = (round(a.current_str[j] * 1000) / 1000);
 		//cout << std::setw(8) << u_x_t;
+		std::cout << a.current_str[j] << ' ';
 	}
 	cout << endl;
 
