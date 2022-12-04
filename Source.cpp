@@ -20,16 +20,16 @@ using std::cin;
 using std::endl;
 
 constexpr double pi = std::numbers::pi;
-constexpr double l = 1000.0;
-constexpr double h = 0.125;
+constexpr double l = 1.0;
+constexpr double h = 0.001;
 constexpr double n_l = l / h;
 constexpr int n_l_int = l / h;
 
-constexpr double tau = 0.0001;
+constexpr double tau = 0.001;
 constexpr int n_tau = 300;
 double t = 0;
 
-constexpr uint32_t thread_count = 4;
+constexpr uint32_t thread_count = 5;
 constexpr int val_on_core = n_l_int / thread_count;
 std::atomic_bool is_thread_finished[thread_count] = { false };
 std::atomic_bool is_thread_stoped[thread_count];
@@ -38,26 +38,23 @@ std::atomic_bool thread_stop = false;
 
 
 
-//void tau_list(double*& arr, const int& size_arr, const double& step) {
-//	for (int i = 0; i <= size_arr; i++) {
-//		arr[i] = step * i;
+//template<unsigned N>
+//double* tau_list(const double& step)
+//{
+//	double* res = new double[N];
+//	for (int i = 0; i <= N; i++) {
+//		res[i] = step * i;
 //	}
+//	return res;
 //}
 
-template<unsigned N>
-/*constexpr*/double* tau_list(const double& step)
-{
-	double* res = new double[N];
-	for (int i = 0; i <= N; i++) {
-		res[i] = step * i;
-	}
-	return res;
-}
 struct arrs {
+	//std::atomic<double>* prev_str = new std::atomic<double>[n_l_int + 1];
+	//std::atomic<double>* current_str = new std::atomic<double>[n_l_int + 1];
 	double* prev_str = new double[n_l_int + 1]{ 0 };
 	double* current_str = new double[n_l_int + 1]{ 0 };
-	/*const*/ double* arr_tau = tau_list<n_tau>(tau);
-	/*const*/ double* arr_l = tau_list<n_l_int>(h);
+	//double* arr_tau = tau_list<n_tau>(tau);
+	//double* arr_l = tau_list<n_l_int>(h);
 };
 
 
@@ -74,7 +71,7 @@ double fi(const double& x) {
 	return 4 * (sin(2 * pi * x) * pow(cos(pi * x), 2));
 }
 
-void in_Thread(int start, int end, arrs* b, /*double t,*/ int thread_number) {
+void in_Thread(int start, int end, arrs* b, int thread_number) {
 	arrs &a = *b;
 	while (!thread_end)
 	{
@@ -82,7 +79,7 @@ void in_Thread(int start, int end, arrs* b, /*double t,*/ int thread_number) {
 			//std::this_thread::sleep_for(2ms);
 		}
 		for (int j = start; j < end; j++) {
-			double x = a.arr_l[j];
+			double x = h * j;
 			double u_x_t;
 			//cout << std::setw(8) << x;
 			if (t == 0) {
@@ -153,14 +150,14 @@ int main() {
 	int mlt_for_loop[thread_count];
 	for (int i = 0; i < thread_count; i++) {
 		mlt_for_loop[i] = val_on_core * i;
-		cout << mlt_for_loop[i] << ' ';
+		//cout << mlt_for_loop[i] << ' ';
 	}
 
 
 	arrs a;
 
 
-	cout << endl << std::setw(10) << "        |";
+	//cout << endl << std::setw(10) << "        |";
 
 	for (int i = 0; i <= n_l_int; i++) {
 		//cout << std::setw(8) << a.arr_l[i];
@@ -201,7 +198,7 @@ int main() {
 	for (int i = 0; i <= n_tau; i++) {
 
 
-		t = a.arr_tau[i];
+		t = tau * i;
 		
 		//std::vector<std::thread> thread_arr; // ---vec---
 		
@@ -215,10 +212,6 @@ int main() {
 				thread_arr[thrd].detach();
 			}
 		}
-
-		/*if (thread_stop) {
-			thread_stop = false;
-		}*/
 
 		while (!all_threads_finished()) {
 			//std::this_thread::sleep_for(13ms);
@@ -262,6 +255,7 @@ int main() {
 
 		if (i != 0) {
 			for (int k = 0; k < n_l_int; k++) {
+				//a.prev_str[k].store(a.current_str[k]);
 				a.prev_str[k] = a.current_str[k];
 			}
 		}
@@ -271,9 +265,7 @@ int main() {
 	auto t2 = std::chrono::steady_clock::now();
 	thread_end = true;
 	delete[] thread_arr;
-	//delete[]& a.arr_tau;
-	//delete[]& a.arr_l;
-	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1000<< "[ms] " << std::endl;
+	std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (t2 - t1).count() / 1'000'000.0<< "[ms] " << std::endl;
 
 	cout << std::setw(6) << t << "   |";
 	for (int j = 0; j < 20 ; j++) {
@@ -282,6 +274,8 @@ int main() {
 		std::cout << a.current_str[j] << ' ';
 	}
 	cout << endl;
+	delete[] a.current_str;
+	delete[] a.prev_str;
 
 
 	//cout << pi << endl;
