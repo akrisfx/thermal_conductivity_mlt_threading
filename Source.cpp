@@ -21,13 +21,13 @@ using std::endl;
 
 constexpr double pi = std::numbers::pi;
 constexpr double l = 1.0;
-constexpr double h = 0.125;
+constexpr double h = 0.01;
 constexpr double n_l = l / h;
 constexpr int n_l_int = l / h;
 
 constexpr double tau = 0.0001;
 constexpr int n_tau = 300;
-double t = 0;
+std::atomic<double> t = 0;
 
 constexpr uint32_t thread_count = 5;
 constexpr int val_on_core = n_l_int / thread_count;
@@ -67,7 +67,7 @@ bool all_threads_finished() {
 	return true;
 }
 
-double fi(const double& x) {
+double fi(const double& x) { 
 	return 4 * (sin(2 * pi * x) * pow(cos(pi * x), 2));
 }
 
@@ -75,7 +75,7 @@ void in_Thread(int start, int end, arrs* b, int thread_number) {
 	arrs &a = *b;
 	while (!thread_end)
 	{
-		while (is_thread_finished[thread_number]) {
+		while (is_thread_stoped[thread_number]) {
 			//std::this_thread::sleep_for(2ms);
 		}
 		for (int j = start; j < end; j++) {
@@ -115,8 +115,8 @@ void in_Thread(int start, int end, arrs* b, int thread_number) {
 			//u_x_t = (round(u_x_t * 1000) / 1000);
 			//cout << std::setw(8) << u_x_t;
 		}
+		is_thread_stoped[thread_number] = true;
 		is_thread_finished[thread_number] = true;
-		//is_thread_stoped[thread_number] = true;
 		if (thread_number == 0) {
 
 		};	
@@ -203,9 +203,9 @@ int main() {
 		//std::vector<std::thread> thread_arr; // ---vec---
 		
 		// clear flags of finished thread
-		/*for (int thrd = 0; thrd < thread_count; ++thrd) {
+		for (int thrd = 0; thrd < thread_count; ++thrd) {
 			is_thread_stoped[thrd] = false;
-		}*/
+		}
 
 		if (i == 0) {
 			for (int thrd = 0; thrd < thread_count; ++thrd) {
@@ -269,9 +269,10 @@ int main() {
 
 	cout << std::setw(6) << t << "   |";
 	for (int j = 0; j < 20 ; j++) {
-		//double u_x_t = (round(a.current_str[j] * 1000) / 1000);
+		double u_x_t = (round(a.current_str[j] * 1000) / 1000);
 		//cout << std::setw(8) << u_x_t;
-		std::cout << a.current_str[j] << ' ';
+		//std::cout << a.current_str[j] << ' ';
+		std::cout << u_x_t << ' ';
 	}
 	cout << endl;
 	delete[] a.current_str;
