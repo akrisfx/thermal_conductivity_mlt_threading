@@ -9,6 +9,7 @@
 #include <chrono>
 #include <vector>
 using namespace std::chrono_literals;
+
 //#define _USE_MATH_DEFINES
 
 // на вход задается некоторая строка, необходимо вывести из него колво цифр и колво букв
@@ -247,6 +248,7 @@ int main() {
 		t3.join();
 		t4.join();
 		cout << std::setw(6) << t << "   |";
+
 		for (int j = 0; j < n_l_int + 1; j++) {
 			double u_x_t = (round(a.current_str[j] * 1000) / 1000);
 			cout << std::setw(8) << u_x_t;
@@ -256,6 +258,7 @@ int main() {
 		if (i != 0) {
 			for (int k = 0; k < n_l_int; k++) {
 				//a.prev_str[k].store(a.current_str[k]);
+
 				a.prev_str[k] = a.current_str[k];
 			}
 		}
